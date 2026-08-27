@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FTD Dashboard</title>
+<style>
+  :root{
+    --bg:#f5f6f8;
+    --card:#ffffff;
+    --border:#e7e9ee;
+    --text:#1a1d29;
+    --muted:#6b7280;
+    --blue:#2563eb;
+    --blue-light:#eaf1ff;
+    --green:#16a34a;
+    --green-light:#e9f9ee;
+    --red:#dc2626;
+    --red-light:#fdecec;
+    --orange:#d97706;
+    --orange-light:#fff3e0;
+    --amber:#f59e0b;
+    --radius:12px;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background:var(--bg);
+    color:var(--text);
+  }
+  .container{max-width:1300px;margin:0 auto;padding:24px;}
+
+  /* Header */
+  .header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding-bottom:20px;
+    border-bottom:1px solid var(--border);
+    margin-bottom:24px;
+    flex-wrap:wrap;
+    gap:16px;
+  }
+  .header h1{margin:0;font-size:22px;font-weight:700;}
+  .header p{margin:2px 0 0;color:var(--muted);font-size:13px;}
+  .header-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+  .btn{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:9px 16px;border-radius:8px;border:1px solid var(--border);
+    background:#fff;font-size:13px;font-weight:600;color:var(--text);
+    cursor:pointer;
+  }
+  .file-chip{
+    display:flex;align-items:center;gap:8px;
+    padding:7px 12px;border-radius:8px;background:var(--blue-light);
+    font-size:13px;font-weight:600;color:var(--blue);
+  }
+  .file-chip button{
+    border:none;background:none;color:var(--blue);cursor:pointer;font-size:14px;
+    line-height:1;padding:0;
+  }
+  .badge-errors{
+    background:var(--red-light);color:var(--red);
+    padding:7px 12px;border-radius:8px;font-size:13px;font-weight:700;
+  }
+
+  /* Stat cards */
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    gap:16px;
+    margin-bottom:20px;
+  }
+  .stat-card{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:18px;
+  }
+  .stat-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;}
+  .stat-label{font-size:13px;color:var(--muted);font-weight:600;line-height:1.3;}
+  .stat-icon{
+    width:30px;height:30px;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;
+  }
+  .icon-blue{background:var(--blue-light);color:var(--blue);}
+  .icon-green{background:var(--green-light);color:var(--green);}
+  .icon-red{background:var(--red-light);color:var(--red);}
+  .icon-orange{background:var(--orange-light);color:var(--orange);}
+  .stat-value{font-size:26px;font-weight:800;margin-bottom:4px;}
+  .stat-sub{font-size:12px;color:var(--muted);}
+  .stat-excellent{font-size:11px;font-weight:700;color:var(--green);background:var(--green-light);padding:3px 8px;border-radius:6px;}
+  .progress-bar{
+    height:6px;background:var(--border);border-radius:4px;overflow:hidden;margin:10px 0 4px;
+  }
+  .progress-fill{height:100%;background:var(--green);border-radius:4px;}
+  .progress-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);}
+
+  /* Alert banner */
+  .alert-banner{
+    background:var(--red-light);border:1px solid #f6c6c6;border-radius:var(--radius);
+    padding:16px 20px;display:flex;align-items:center;justify-content:space-between;
+    margin-bottom:24px;flex-wrap:wrap;gap:12px;
+  }
+  .alert-left{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--red);}
+  .alert-left b{color:var(--red);}
+  .alert-left .normal{color:var(--text);font-weight:400;}
+  .alert-btn{
+    background:var(--red);color:#fff;border:none;padding:10px 18px;
+    border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;
+    display:flex;align-items:center;gap:6px;white-space:nowrap;
+  }
+
+  /* Main grid */
+  .main-grid{
+    display:grid;
+    grid-template-columns:340px 1fr;
+    gap:20px;
+    align-items:start;
+  }
+  .panel{
+    background:var(--card);border:1px solid var(--border);border-radius:var(--radius);
+    padding:20px;
+  }
+  .panel h2{margin:0 0 20px;font-size:16px;font-weight:700;}
+
+  /* Donut chart */
+  .donut-wrap{display:flex;justify-content:center;margin-bottom:20px;}
+  .legend-item{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:8px 0;font-size:13px;border-bottom:1px solid #f2f2f4;
+  }
+  .legend-item:last-child{border-bottom:none;}
+  .legend-left{display:flex;align-items:center;gap:8px;}
+  .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .legend-count{color:var(--muted);margin-right:10px;}
+  .legend-pct{font-weight:700;width:44px;text-align:right;}
+
+  /* Obras table panel */
+  .obras-header{
+    display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;
+  }
+  .filter-group{display:flex;gap:8px;flex-wrap:wrap;}
+  .filter-btn{
+    padding:8px 14px;border-radius:8px;border:1px solid var(--border);
+    background:#fff;font-size:13px;font-weight:600;color:var(--text);cursor:pointer;
+    display:flex;align-items:center;gap:6px;
+  }
+  .filter-btn.active{background:var(--blue);color:#fff;border-color:var(--blue);}
+
+  table{width:100%;border-collapse:collapse;}
+  thead th{
+    text-align:left;font-size:11px;color:var(--muted);font-weight:700;
+    letter-spacing:.04em;text-transform:uppercase;padding:10px 8px;
+    border-bottom:1px solid var(--border);
+  }
+  thead th.num{text-align:right;}
+  tbody td{
+    padding:14px 8px;border-bottom:1px solid #f2f2f4;font-size:13.5px;vertical-align:middle;
+  }
+  tbody tr:hover{background:#fafbfc;}
+  .num{text-align:right;font-weight:600;}
+  .obra-name{display:flex;align-items:center;gap:8px;font-weight:600;}
+  .caret{color:var(--muted);font-size:11px;}
+  .ok-cell{color:var(--green);font-weight:700;display:flex;align-items:center;gap:4px;justify-content:flex-end;}
+  .err-cell{color:var(--red);font-weight:700;display:flex;align-items:center;gap:4px;justify-content:flex-end;}
+  .err-cell.zero{color:#cbd0d8;}
+  .health-bar{width:34px;height:7px;border-radius:4px;background:var(--green);margin-left:auto;}
+
+  /* Floating alert card */
+  .float-alert{
+    position:fixed;bottom:24px;right:24px;width:320px;
+    background:var(--amber);color:#3a2a00;border-radius:14px;padding:18px 20px;
+    box-shadow:0 12px 30px rgba(0,0,0,0.18);
+    font-size:13px;
+  }
+  .float-alert-title{display:flex;align-items:center;justify-content:space-between;font-weight:800;font-size:13.5px;margin-bottom:10px;}
+  .float-alert-title span{display:flex;align-items:center;gap:8px;}
+  .float-close{background:none;border:none;font-size:16px;cursor:pointer;color:#3a2a00;line-height:1;}
+  .float-sub{font-weight:700;margin-bottom:10px;}
+  .float-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;line-height:1.3;}
+  .float-row:last-child{margin-bottom:0;}
+
+  @media(max-width:1100px){
+    .stats{grid-template-columns:repeat(3,1fr);}
+    .main-grid{grid-template-columns:1fr;}
+  }
+  @media(max-width:640px){
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .float-alert{left:16px;right:16px;width:auto;}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h1>FTD Dashboard</h1>
+      <p>Controle de lançamentos e verificações</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn">⬇ Exportar PDF</button>
+      <div class="file-chip">📄 ftdData.json <button aria-label="remover arquivo">✕</button></div>
+      <div class="badge-errors">29 erros encontrados</div>
+    </div>
+  </div>
+
+  <!-- Stat cards -->
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Total de<br>Lançamentos</span>
+        <span class="stat-icon icon-blue">📄</span>
+      </div>
+      <div class="stat-value">1.328</div>
+      <div class="stat-sub">23 obras</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Valor Total</span>
+        <span class="stat-icon icon-blue">$</span>
+      </div>
+      <div class="stat-value">R$ 99,8 mi</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Lançamentos OK</span>
+        <span class="stat-icon icon-green">✓</span>
+      </div>
+      <div class="stat-value">1.299</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Erros Encontrados</span>
+        <span class="stat-icon icon-red">⚠</span>
+      </div>
+      <div class="stat-value">29</div>
+      <div class="stat-sub">2.2% dos lançamentos</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">💰 Valor em Risco</span>
+        <span class="stat-icon icon-orange">$</span>
+      </div>
+      <div class="stat-value">R$ 597,1 mil</div>
+      <div class="stat-sub">29 lançamentos com erro</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-top">
+        <span class="stat-label">Acurácia Geral</span>
+        <span class="stat-excellent">Excelente</span>
+      </div>
+      <div class="stat-value">97,8%</div>
+      <div class="progress-bar"><div class="progress-fill" style="width:97.8%"></div></div>
+      <div class="progress-labels"><span>0%</span><span>50%</span><span>100%</span></div>
+    </div>
+  </div>
+
+  <!-- Alert banner -->
+  <div class="alert-banner">
+    <div class="alert-left">
+      ⚠ <span><b>ERRO MAIS FREQUENTE:</b> <span class="normal">CNPJ DIVERGENTE (90%)</span> — 26 de 29 erros</span>
+    </div>
+    <button class="alert-btn">Ver lançamentos com esse erro →</button>
+  </div>
+
+  <!-- Main grid -->
+  <div class="main-grid">
+
+    <!-- Tipos de Erro -->
+    <div class="panel">
+      <h2>Tipos de Erro</h2>
+      <div class="donut-wrap">
+        <svg width="220" height="220" viewBox="0 0 220 220">
+          <circle cx="110" cy="110" r="70" fill="none" stroke="#f2f2f4" stroke-width="40"/>
+          <!-- CNPJ DIVERGENTE 89.7% -->
+          <circle cx="110" cy="110" r="70" fill="none" stroke="#dc2626" stroke-width="40"
+            stroke-dasharray="395.4 439.8" stroke-dashoffset="0" transform="rotate(-90 110 110)"/>
+          <!-- Data divergente 6.9% -->
+          <circle cx="110" cy="110" r="70" fill="none" stroke="#d97706" stroke-width="40"
+            stroke-dasharray="30.3 439.8" stroke-dashoffset="-395.4" transform="rotate(-90 110 110)"/>
+          <!-- CNPJ DIVERGENTE/DATA 3.4% -->
+          <circle cx="110" cy="110" r="70" fill="none" stroke="#f59e0b" stroke-width="40"
+            stroke-dasharray="15.1 439.8" stroke-dashoffset="-425.7" transform="rotate(-90 110 110)"/>
+        </svg>
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <span class="legend-left"><span class="dot" style="background:#dc2626"></span>CNPJ DIVERGENTE</span>
+          <span><span class="legend-count">26</span><span class="legend-pct">89.7%</span></span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-left"><span class="dot" style="background:#d97706"></span>Data divergente</span>
+          <span><span class="legend-count">2</span><span class="legend-pct">6.9%</span></span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-left"><span class="dot" style="background:#f59e0b"></span>CNPJ DIVERGENTE/DATA</span>
+          <span><span class="legend-count">1</span><span class="legend-pct">3.4%</span></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Obras table -->
+    <div class="panel">
+      <div class="obras-header">
+        <h2 style="margin:0;">Obras</h2>
+        <div class="filter-group">
+          <button class="filter-btn">▽ Filtrar</button>
+          <button class="filter-btn active">Mais erros</button>
+          <button class="filter-btn">Maior valor</button>
+          <button class="filter-btn">A-Z</button>
+        </div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>OBRA</th>
+            <th class="num">LANÇAMENTOS</th>
+            <th class="num">VALOR TOTAL</th>
+            <th class="num">OK</th>
+            <th class="num">ERROS</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="obras-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Floating alert -->
+<div class="float-alert" id="floatAlert">
+  <div class="float-alert-title">
+    <span>📉 🏗 ALERTA MODERADO</span>
+    <button class="float-close" onclick="document.getElementById('floatAlert').style.display='none'">✕</button>
+  </div>
+  <div class="float-sub">Monitoramento necessário.</div>
+  <div class="float-row">🧱 Erros: 29 (2.2%)</div>
+  <div class="float-row">💰 Impacto financeiro: R$ 597,1 mil</div>
+  <div class="float-row">⚠ Principal problema: CNPJ DIVERGENTE</div>
+  <div class="float-row">🏢 Obra mais crítica: Fase 2 (14 erros)</div>
+</div>
+
+<script>
+  const obras = [
+    { nome: "542 - OBRA - Arch Capital Golgi Franco da R...", lanc: 213, valor: "R$ 12.848.013,20", ok: 199, err: 14 },
+    { nome: "2201 - OBRA - Oscar Freire (Faturamento Dir...", lanc: 115, valor: "R$ 1.881.346,11", ok: 104, err: 11 },
+    { nome: "513 - OBRA - XPEX CD Contagem", lanc: 83, valor: "R$ 5.233.900,01", ok: 82, err: 1 },
+    { nome: "538 - OBRA - GLP Guarulhos III", lanc: 307, valor: "R$ 23.310.281,69", ok: 306, err: 1 },
+    { nome: "541 - OBRA - Hitachi Energy", lanc: 36, valor: "R$ 19.160.975,11", ok: 35, err: 1 },
+    { nome: "24535 - OBRA - Brookfield Alceu Guarulhos", lanc: 19, valor: "R$ 1.087.436,53", ok: 18, err: 0 },
+    { nome: "521 - OBRA - Fulwood Guarulhos FW15", lanc: 3, valor: "R$ 117.699,95", ok: 3, err: 0 },
+    { nome: "527 - OBRA - Prologis Dutra II RJ", lanc: 13, valor: "R$ 177.118,29", ok: 13, err: 0 },
+    { nome: "531 - OBRA - Toyota Nova Fabrica Pack 01", lanc: 2, valor: "R$ 1.145.007,39", ok: 2, err: 0 },
+  ];
+
+  const tbody = document.getElementById('obras-body');
+  obras.forEach(o => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><div class="obra-name"><span class="caret">▸</span>${o.nome}</div></td>
+      <td class="num">${o.lanc}</td>
+      <td class="num">${o.valor}</td>
+      <td class="num"><span class="ok-cell">✓ ${o.ok}</span></td>
+      <td class="num">${o.err > 0 ? `<span class="err-cell">⚠ ${o.err}</span>` : `<span class="err-cell zero">—</span>`}</td>
+      <td><div class="health-bar"></div></td>
+    `;
+    tbody.appendChild(tr);
+  });
+</script>
+
+</body>
+</html>
